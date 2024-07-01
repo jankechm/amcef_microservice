@@ -92,6 +92,10 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+<!--					Uncomment lines below if on Windows and using Docker Desktop -->
+<!--					<docker>-->
+<!--						<host>//./pipe/dockerDesktopLinuxEngine</host>-->
+<!--					</docker>-->
 				</configuration>
 			</plugin>
 			<plugin>

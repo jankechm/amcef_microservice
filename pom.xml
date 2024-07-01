@@ -93,9 +93,9 @@
 						</exclude>
 					</excludes>
 <!--					Uncomment lines below if on Windows and using Docker Desktop -->
-<!--					<docker>-->
-<!--						<host>//./pipe/dockerDesktopLinuxEngine</host>-->
-<!--					</docker>-->
+					<docker>
+						<host>//./pipe/dockerDesktopLinuxEngine</host>
+					</docker>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -104,11 +104,6 @@
 			    <configuration>
 			        <annotationProcessorPaths>
 			            <path>
-			                <groupId>org.mapstruct</groupId>
-			                <artifactId>mapstruct-processor</artifactId>
-			                <version>${mapstruct.version}</version>
-			            </path>
-			            <path>
 			                <groupId>org.projectlombok</groupId>
 			                <artifactId>lombok</artifactId>
 			            </path>
@@ -116,6 +111,11 @@
 			                <groupId>org.projectlombok</groupId>
 			                <artifactId>lombok-mapstruct-binding</artifactId>
 				        	<version>0.2.0</version>
+			            </path>
+			            <path>
+			                <groupId>org.mapstruct</groupId>
+			                <artifactId>mapstruct-processor</artifactId>
+			                <version>${mapstruct.version}</version>
 			            </path>
 			        </annotationProcessorPaths>
 			    </configuration>

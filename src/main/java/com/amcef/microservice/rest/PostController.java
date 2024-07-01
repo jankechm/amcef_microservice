@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.amcef.microservice.dto.PostCreationDto;
 import com.amcef.microservice.dto.PostResponseDto;
 import com.amcef.microservice.dto.PostUpdateDto;
+import com.amcef.microservice.exception.UserIdNotExistsException;
 import com.amcef.microservice.service.PostService;
 
 @RestController
@@ -56,15 +57,14 @@ public class PostController {
     
     @PostMapping
     public ResponseEntity<String> addNewPost(@RequestBody PostCreationDto postDto) {
-    	Optional<Integer> newPostId = postService.addNewPost(postDto);
-    	
-    	if (newPostId.isPresent()) {
-    		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-    				.buildAndExpand(newPostId.get()).toUri();
+		try {
+			int newPostId = postService.addNewPost(postDto);
+			URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+    				.buildAndExpand(newPostId).toUri();
     		return ResponseEntity.created(location).build();
-    	} else {
-    		return ResponseEntity.badRequest().body("Post creation unsuccessful");
-    	}
+		} catch (UserIdNotExistsException e) {
+			return ResponseEntity.badRequest().body("Post creation unsuccessful! Invalid userId!");
+		}
     }
     
     @PutMapping("/{id}")

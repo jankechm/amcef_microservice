@@ -13,5 +13,7 @@ public interface PostMapper {
 	@Mapping(target = "id", ignore = true)
 	Post toEntity(PostCreationDto dto);
 	
+	Post toEntity(PostResponseDto dto);
+	
 	PostResponseDto toResponseDto(Post entity);
 }

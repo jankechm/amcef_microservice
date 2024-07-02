@@ -30,6 +30,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<mapstruct.version>1.6.0.Beta2</mapstruct.version>
+		<springdoc.openapi.version>2.6.0</springdoc.openapi.version>
 	</properties>
 	
 	<dependencies>
@@ -78,6 +79,11 @@
 		    <artifactId>mapstruct</artifactId>
 		    <version>${mapstruct.version}</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.springdoc</groupId>
+		    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+		    <version>${springdoc.openapi.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -97,6 +103,20 @@
 						<host>//./pipe/dockerDesktopLinuxEngine</host>
 					</docker>
 				</configuration>
+				<executions>
+			        <execution>
+					     <id>pre-integration-test</id>
+					     <goals>
+					     	 <goal>start</goal>
+					     </goals>
+				    </execution>
+				    <execution>
+					     <id>post-integration-test</id>
+					     <goals>
+					     	 <goal>stop</goal>
+					     </goals>
+				    </execution>
+			    </executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -118,6 +138,22 @@
 			                <version>${mapstruct.version}</version>
 			            </path>
 			        </annotationProcessorPaths>
+			    </configuration>
+			</plugin>
+			<plugin>
+			    <groupId>org.springdoc</groupId>
+			    <artifactId>springdoc-openapi-maven-plugin</artifactId>
+			    <version>1.4</version>
+			    <executions>
+			        <execution>
+			            <phase>integration-test</phase>
+			            <goals>
+			                <goal>generate</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			    <configuration> 
+			        <apiDocsUrl>http://localhost:8080/api-docs</apiDocsUrl> 
 			    </configuration>
 			</plugin>
 		</plugins>

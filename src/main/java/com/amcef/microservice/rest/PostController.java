@@ -16,11 +16,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.amcef.microservice.dto.GeneralResponseDto;
 import com.amcef.microservice.dto.PostCreationDto;
 import com.amcef.microservice.dto.PostResponseDto;
 import com.amcef.microservice.dto.PostUpdateDto;
 import com.amcef.microservice.exception.UserIdNotExistsException;
 import com.amcef.microservice.service.PostService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 @RequestMapping("/posts")
@@ -32,10 +39,14 @@ public class PostController {
 		this.postService = postService;
 	}
 
-	
-    @GetMapping("/{id}")
+	@Operation(summary = "Get a post by its id")
+	@ApiResponse(responseCode = "200", description = "OK",
+		content = { @Content(mediaType = "application/json",
+			schema = @Schema(implementation = PostResponseDto.class)) })
+	@ApiResponse(responseCode = "404", description = "The post was not found.", content = @Content)
+	@GetMapping("/{id}")
     public ResponseEntity<PostResponseDto> getPost(@PathVariable Integer id) {
-    	Optional<PostResponseDto> postDto = postService.retrievePostById(id);
+    	Optional<PostResponseDto> postDto = this.postService.retrievePostById(id);
     	
     	if (postDto.isPresent()) {
     		return ResponseEntity.ok(postDto.get());
@@ -44,9 +55,15 @@ public class PostController {
     	}
     }
     
+	@Operation(summary = "Get posts by userId")
+	@ApiResponse(responseCode = "200", description = "OK",
+		content = { @Content(mediaType = "application/json",
+			array = @ArraySchema(schema = @Schema(implementation = PostResponseDto.class))
+		) })
+	@ApiResponse(responseCode = "404", description = "No posts found with specified userId.", content = @Content)
     @GetMapping(params = "userId")
     public ResponseEntity<List<PostResponseDto>> getPosts(@RequestParam Integer userId) {
-    	List<PostResponseDto> posts = postService.retrievePostsByUserId(userId);
+    	List<PostResponseDto> posts = this.postService.retrievePostsByUserId(userId);
     	
     	if (posts.isEmpty()) {
     		return ResponseEntity.notFound().build();
@@ -55,32 +72,45 @@ public class PostController {
     	}
     }
     
+	@Operation(summary = "Add new post")
+	@ApiResponse(responseCode = "201", description = "Post created.",
+		content = { @Content(mediaType = "application/json",
+			schema = @Schema(implementation = GeneralResponseDto.class)) })
+	@ApiResponse(responseCode = "404", description = "Invalid userId.", content = @Content)
     @PostMapping
-    public ResponseEntity<String> addNewPost(@RequestBody PostCreationDto postDto) {
+    public ResponseEntity<GeneralResponseDto> addNewPost(@RequestBody PostCreationDto postDto) {
 		try {
-			int newPostId = postService.addNewPost(postDto);
+			int newPostId = this.postService.addNewPost(postDto);
 			URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
     				.buildAndExpand(newPostId).toUri();
-    		return ResponseEntity.created(location).build();
+    		return ResponseEntity.created(location).body(new GeneralResponseDto("New post created successfully!"));
 		} catch (UserIdNotExistsException e) {
-			return ResponseEntity.badRequest().body("Post creation unsuccessful! Invalid userId!");
+			return ResponseEntity.badRequest().body(
+					new GeneralResponseDto("Post creation unsuccessful! Invalid userId!"));
 		}
     }
     
+	@Operation(summary = "Update post")
+	@ApiResponse(responseCode = "200", description = "Post updated successfully.",
+		content = { @Content(mediaType = "application/json",
+			schema = @Schema(implementation = GeneralResponseDto.class)) })
+	@ApiResponse(responseCode = "404", description = "The post was not found.", content = @Content)
     @PutMapping("/{id}")
-    public ResponseEntity<String> updatePost(@PathVariable Integer id, @RequestBody PostUpdateDto postDto) {
-    	boolean isOk = postService.updatePost(id, postDto);
+    public ResponseEntity<GeneralResponseDto> updatePost(@PathVariable Integer id, @RequestBody PostUpdateDto postDto) {
+    	boolean isOk = this.postService.updatePost(id, postDto);
     	
     	if (isOk) {
-    		return ResponseEntity.ok("Post updated successfully");
+    		return ResponseEntity.ok(new GeneralResponseDto("Post updated successfully."));
     	} else {
     		return ResponseEntity.notFound().build();
     	}
     }
     
+	@Operation(summary = "Delete post")
+	@ApiResponse(responseCode = "204", content = @Content)
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable Integer id) {
-    	postService.deletePost(id);
+    public ResponseEntity<?> deletePost(@PathVariable Integer id) {
+    	this.postService.deletePost(id);
     	
     	return ResponseEntity.noContent().build();
     }

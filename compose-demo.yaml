@@ -1,0 +1,39 @@
+services:
+  mysql:
+    image: "mysql:latest"
+    container_name: "mj-microservice-db"
+    restart: "unless-stopped"
+    ports:
+      - '33006:3306'
+    environment:
+      - 'MYSQL_DATABASE=mydatabase'
+      - 'MYSQL_PASSWORD=secret'
+      - 'MYSQL_ROOT_PASSWORD=verysecret'
+      - 'MYSQL_USER=myuser'
+    healthcheck:
+      test: "mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD"
+      interval: "5s"
+      timeout: "30s"
+      retries: 60
+    networks:
+      - "mj-network"
+  web-service:
+    build: "."
+    image: "mj-web-service:latest"
+    container_name: "mj-web-service"
+    restart: "unless-stopped"
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: "service_healthy"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8080/posts/1 || exit 1
+      interval: 5s
+      timeout: 3s
+      retries: 4
+    networks:
+      - "mj-network"
+networks:
+  mj-network:
+    driver: bridge

@@ -1,6 +1,6 @@
 # AMCEF Microservice
 
-A RESTful microservice for managing users' posts.
+A RESTful microservice for managing users' posts developed using Spring Boot.
 
 ## Requirements
 * Java 21
@@ -16,7 +16,7 @@ At first, if you are using Windows OS and docker desktop, go to the pom.xml and 
 This is an issue with Spring Boot and Docker Desktop since version 4.31.0 https://github.com/spring-projects/spring-boot/issues/41199.
 
 ### Generating OpenAPI documentation
-The documentation is being generated during the integration test phase and the app has to be started (it is stopped right after that phase). For this purpose, the _openapi_ profile has to be used.
+The documentation is being generated during the integration test phase and the app is started (it is stopped right after that phase). For this purpose, the _openapi_ profile has to be used.
 ```
 ./mvnw clean verify -Popenapi
 ```

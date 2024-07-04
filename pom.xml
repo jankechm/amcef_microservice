@@ -176,6 +176,12 @@
 	        </properties>
 	    </profile>
 	    <profile>
+	        <id>openapi</id>
+	        <properties>
+	            <spring.profiles.active>openapi</spring.profiles.active>
+	        </properties>
+	    </profile>
+	    <profile>
 	        <id>demo</id>
 	        <properties>
 	            <spring.profiles.active>demo</spring.profiles.active>
